@@ -26,31 +26,7 @@ class rdict(dict):
                     if m:ret.append( super(rdict, self).__getitem__(m.group(0)) )
             except:raise(KeyError(key))
         return ret
-
-class TestMongo(object):
-
-     def __init__(self):
-         self.clint = MongoClient()
-         self.db = self.clint['test']
-
-     def add_one(self):
-        """データ挿入"""
-        post = {
-            'title': 'ハリネズミ',
-            'content': 'ハリネズミ可愛い~',
-            'created_at': datetime.now()
-        }
-        return self.db.test.insert_one(post)
-
-     def add_clone(self):
-        """データ挿入"""
-        clone1 = "aaaaaa"
-        clone2 = "bbbbbb"
-        post2 = {
-            'clone1': clone1,
-            'clone2': clone2,
-        }
-        return self.db.test.insert_one(post2) 
+        
 if __name__ == '__main__':
     
     Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/tests/junit/org/apache/tools/ant/AntClassLoaderTest.java') #target_file_path(テストファイル)内のメソッド名をすべて取得
