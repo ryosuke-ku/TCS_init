@@ -26,9 +26,47 @@ class rdict(dict):
                     if m:ret.append( super(rdict, self).__getitem__(m.group(0)) )
             except:raise(KeyError(key))
         return ret
+
+def printProductionPath():
+    initTestPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/*Test.java', recursive=True)
+    productionPath1 =[]
+    for initTestPath in initTestPath1:
+        # print(initTestPath)
+        num = initTestPath.rfind("\\")
+        testFileName = initTestPath[num+1:]
+        fileName = testFileName.replace('Test','').replace('test','')
+        prodPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/' + fileName , recursive=True)
+        if len(prodPath1)==0:
+            # print('None')
+            pass
+        else:
+            # print(prodPath1[0])
+            productionPath1.append(prodPath1[0])
+    return productionPath1
+
+def printTestPath():
+    initTestPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/*Test.java', recursive=True)
+    testPath1 = []
+    for initTestPath in initTestPath1:
+        # print(initTestPath)
+        num = initTestPath.rfind("\\")
+        testFileName = initTestPath[num+1:]
+        fileName = testFileName.replace('Test','').replace('test','')
+        prodPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/' + fileName , recursive=True)
+        if len(prodPath1)==0:
+            # print('None')
+            pass
+        else:
+            # print(prodPath1[0])
+            testPath1.append(initTestPath)
+
+    return testPath1
+    # for printtestpath in testPath1:
+    #     print(printtestpath)
         
 if __name__ == '__main__':
-    
+    PPath = printProductionPath()
+    print(PPath)
     Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/tests/junit/org/apache/tools/ant/AntClassLoaderTest.java') #target_file_path(テストファイル)内のメソッド名をすべて取得
     # print(Testmethodcalls_list)
     testMethodMapcall = defaultdict(list)

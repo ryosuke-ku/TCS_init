@@ -22,9 +22,10 @@ def printProductionPath():
         else:
             # print(prodPath1[0])
             productionPath1.append(prodPath1[0])
+    return productionPath1
 
-    for printpath in productionPath1:
-        print(printpath)
+    # for printpath in productionPath1:
+    #     print(printpath)
 
 
 def printTestPath():
