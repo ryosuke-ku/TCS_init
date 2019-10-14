@@ -65,49 +65,60 @@ def printTestPath():
     #     print(printtestpath)
         
 if __name__ == '__main__':
-    PPath = printProductionPath()
-    print(PPath)
-    Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/tests/junit/org/apache/tools/ant/AntClassLoaderTest.java') #target_file_path(テストファイル)内のメソッド名をすべて取得
-    # print(Testmethodcalls_list)
-    testMethodMapcall = defaultdict(list)
-    num = 0
-    for i in Testmethodcalls_list:
-        print('-------------------------------------------------------')
-        print('key : ' + i)
-        for j in Testmethodcalls_list[i][0]:
-            if len(j) == 0:
-                pass
-            else:
-                print('value : ' + j)
-                testMethodMapcall[j + '_' + str(num)] = i
-                num += 1
-
-    print(testMethodMapcall)
-
-    Productionmethods_list = AstProcessorProduction(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/main/org/apache/tools/ant/AntClassLoader.java') #プロダクションファイル内のメソッド名をすべて取得
-    # print(Productionmethods_list)
-    # for j in Productionmethods_list:
-    #     print(j)
     clint = MongoClient()
     db = clint['test']
-    for ProductionMethod in Productionmethods_list:
-        rd = rdict(testMethodMapcall)
-        remethods = rd["^(?=.*" + ProductionMethod + ").*$"]
-        if len(remethods) == 0:
-            pass
-        else:
-            print('----------------------------------------------------')
-            print('key : ' + str(ProductionMethod))
-            rt = list(set(remethods))
-            print('value : ' + str(rt))
+    PPath = printProductionPath()
+    print(PPath)
+    print(len(PPath))
 
-   
-        for rtitem in rt:
-            post2 = {
-                'clone1': ProductionMethod,
-                'clone2': rtitem,
-            }
-            db.test.insert_one(post2)  
+    TPath = printTestPath()
+    print(TPath)
+    print(len(TPath))
+
+    for numPath in range(3):
+        print(numPath)
+        print(TPath[numPath])
+        Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute(TPath[numPath]) #target_file_path(テストファイル)内のメソッド名をすべて取得
+        # print(Testmethodcalls_list)
+        testMethodMapcall = defaultdict(list)
+        num = 0
+        for i in Testmethodcalls_list:
+            # print('-------------------------------------------------------')
+            # print('key : ' + i)
+            for j in Testmethodcalls_list[i][0]:
+                if len(j) == 0:
+                    pass
+                else:
+                    # print('value : ' + j)
+                    testMethodMapcall[j + '_' + str(num)] = i
+                    num += 1
+
+        # print(testMethodMapcall)
+        Productionmethods_list = AstProcessorProduction(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
+        print(numPath)
+        print(PPath[numPath])
+        # print(Productionmethods_list)
+        # for j in Productionmethods_list:
+        #     print(j)
+
+        for ProductionMethod in Productionmethods_list:
+            rd = rdict(testMethodMapcall)
+            remethods = rd["^(?=.*" + ProductionMethod + ").*$"]
+            if len(remethods) == 0:
+                pass
+            else:
+                print('----------------------------------------------------')
+                print('key : ' + str(ProductionMethod))
+                rt = list(set(remethods))
+                print('value : ' + str(rt))
+
+    
+                for rtitem in rt:
+                    post2 = {
+                        'clone1': ProductionMethod,
+                        'clone2': rtitem,
+                    }
+                    db.test.insert_one(post2)  
 
     # obj = TestMongo()
     # rest = obj.add_clone()
