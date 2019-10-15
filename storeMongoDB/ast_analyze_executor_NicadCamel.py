@@ -63,18 +63,8 @@ def printTestPath():
     return testPath1
     # for printtestpath in testPath1:
     #     print(printtestpath)
-        
-if __name__ == '__main__':
-    clint = MongoClient()
-    db = clint['test']
-    PPath = printProductionPath()
-    print(PPath)
-    print(len(PPath))
 
-    TPath = printTestPath()
-    print(TPath)
-    print(len(TPath))
-
+def storeToDB():
     for numPath in range(3):
         print(numPath)
         print(TPath[numPath])
@@ -119,12 +109,24 @@ if __name__ == '__main__':
                         'clone2': rtitem,
                     }
                     db.test.insert_one(post2)  
+        
+if __name__ == '__main__':
+    clint = MongoClient()
+    db = clint['test']
+    PPath = printProductionPath()
+    print(PPath)
+    print(len(PPath))
 
-    # obj = TestMongo()
-    # rest = obj.add_clone()
+    TPath = printTestPath()
+    print(TPath)
+    print(len(TPath))
+
+
+    storeToDB()
+
 
     ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/main/org/apache/tools/ant/AntClassLoader.java') #プロダクションファイル内のメソッド名をすべて取得
-    # print(ProductionmethodLine_list)
+    print(ProductionmethodLine_list)
 
     # for Pmethod in Productionmethods_list:
 
