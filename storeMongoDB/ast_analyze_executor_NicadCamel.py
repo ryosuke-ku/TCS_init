@@ -1,6 +1,7 @@
 import logging.config
 from ast.ast_processor_Production import AstProcessorProduction
 from ast.ast_processor_Production_line import AstProcessorProductionLine
+from ast.ast_processor_Test_line import AstProcessorTestLine
 from ast.ast_processor_Test import AstProcessorTest
 from ast.ast_processor_TestMethodCall import AstProcessorTestMethodCall
 from ast.basic_info_listener_pt import BasicInfoListener
@@ -27,15 +28,15 @@ class rdict(dict):
             except:raise(KeyError(key))
         return ret
 
-def printProductionPath():
-    initTestPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/*Test.java', recursive=True)
+def printProductionPath(project_name):
+    initTestPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/*Test.java', recursive=True)
     productionPath1 =[]
     for initTestPath in initTestPath1:
         # print(initTestPath)
         num = initTestPath.rfind("\\")
         testFileName = initTestPath[num+1:]
         fileName = testFileName.replace('Test','').replace('test','')
-        prodPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/' + fileName , recursive=True)
+        prodPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/' + fileName , recursive=True)
         if len(prodPath1)==0:
             # print('None')
             pass
@@ -44,15 +45,15 @@ def printProductionPath():
             productionPath1.append(prodPath1[0])
     return productionPath1
 
-def printTestPath():
-    initTestPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/*Test.java', recursive=True)
+def printTestPath(project_name):
+    initTestPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/*Test.java', recursive=True)
     testPath1 = []
     for initTestPath in initTestPath1:
         # print(initTestPath)
         num = initTestPath.rfind("\\")
         testFileName = initTestPath[num+1:]
         fileName = testFileName.replace('Test','').replace('test','')
-        prodPath1 = glob.glob('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/**/' + fileName , recursive=True)
+        prodPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/' + fileName , recursive=True)
         if len(prodPath1)==0:
             # print('None')
             pass
@@ -65,7 +66,7 @@ def printTestPath():
     #     print(printtestpath)
 
 def storeToDB():
-    for numPath in range(1):
+    for numPath in range(3):
         print(numPath)
         print(TPath[numPath])
         Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute(TPath[numPath]) #target_file_path(テストファイル)内のメソッド名をすべて取得
@@ -90,7 +91,7 @@ def storeToDB():
         # print(Productionmethods_list)
         # for j in Productionmethods_list:
         #     print(j)
-
+        number = 0
         for ProductionMethod in Productionmethods_list:
             rd = rdict(testMethodMapcall)
             remethods = rd["^(?=.*" + ProductionMethod + ").*$"]
@@ -110,40 +111,96 @@ def storeToDB():
                     }
                     db.test.insert_one(post2)  
         
+                file = open('projects/0123/00joshi_hqapp/main/' + str(number) + '.java','w') # Nicad_3.javaのファイルを開く
+
                 ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
                 print(ProductionmethodLine_list[ProductionMethod])
                 startline = int(ProductionmethodLine_list[ProductionMethod][0])-1
-                print(startline)
                 endline = int(ProductionmethodLine_list[ProductionMethod][1])
                 f = open(PPath[numPath], "r", encoding="utf-8")
                 lines = f.readlines() # 1行毎にファイル終端まで全て読む(改行文字も含まれる)
                 f.close()
                 src = []
+                print('<Production Code>')
                 for x in range(startline,endline):
                     # print(lines2[x].replace('\n', ''))
                     srcLow = lines[x].replace('\n', '') + '\n'
                     print(srcLow)
+                    file.write(srcLow)
                     src.append(srcLow)
-                
-                for low in src:
-                    print(low)
+
+                  
+                file_test = open('projects/0123/00joshi_hqapp/test/' + str(number) + 'Test.java','w') # Nicad_3.javaのファイルを開く
+
+                TestmethodLine_list = AstProcessorTestLine(None, BasicInfoListener()).execute(TPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
+                # print(TestmethodLine_list)
+                print(TestmethodLine_list[rtitem])
+                startline_test = int(TestmethodLine_list[rtitem][0])-1
+                endline_test = int(TestmethodLine_list[rtitem][1])
+                f = open(TPath[numPath], "r", encoding="utf-8")
+                lines = f.readlines() # 1行毎にファイル終端まで全て読む(改行文字も含まれる)
+                f.close()
+                src_test = []
+                print('<Test Code>')
+                for x in range(startline_test,endline_test):
+                    # print(lines2[x].replace('\n', ''))
+                    srcLow = lines[x].replace('\n', '') + '\n'
+                    print(srcLow)
+                    file_test.write(srcLow)
+                    src_test.append(srcLow)
+
+                number += 1  
 
 
-        
+def makeFolder():
+    os.mkdir('projects')
+    projects_array = ['1234','ABCD','EFGH','IJKL','MNOP','QRST','UVW','XYZ']
+    for project in projects_array:
+        data_set = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project + '/*')
+        # print(data_set_1234)
+        os.mkdir('projects/' + project)
+        for project_data in data_set:
+            num_slash = project_data.rfind("\\")
+            project_folder = project_data[num_slash + 1:]
+            print(project_folder)
+            os.mkdir('projects/' + project + '/' + project_folder)
+            os.mkdir('projects/' + project + '/' + project_folder + '/main')
+            os.mkdir('projects/' + project + '/' + project_folder + '/test')
+
+def dict_projectName():
+    projectName = defaultdict(list)
+    projects_array = ['1234','ABCD','EFGH','IJKL','MNOP','QRST','UVW','XYZ']
+    for project in projects_array:
+        data_set = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project + '/*')
+        for project_data in data_set:
+            num_slash = project_data.rfind("\\")
+            project_folder = project_data[num_slash + 1:]
+            # print(project_folder)
+            projectName[project].append(project_folder)
+    
+    return projectName
+
 if __name__ == '__main__':
     clint = MongoClient()
     db = clint['test']
-    PPath = printProductionPath()
+    # PPath = printProductionPath()
     # print(PPath)
     # print(len(PPath))
 
-    TPath = printTestPath()
+    # TPath = printTestPath()
     # print(TPath)
     # print(len(TPath))
+    projects_dic = dict_projectName()
+    project_list_1234 = projects_dic['1234']
+    print(project_list_1234)
+    for project_name in project_list_1234:
+        print(project_name)
+        a = printProductionPath('1234/' + project_name)
+        print(a)
+        b = printTestPath('1234/' + project_name)
+        print(b)
+    # storeToDB()
 
-
-    storeToDB()
-  
     # for numPath in range(3):
     #     ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
     #     print(ProductionmethodLine_list)
