@@ -65,7 +65,7 @@ def printTestPath():
     #     print(printtestpath)
 
 def storeToDB():
-    for numPath in range(3):
+    for numPath in range(1):
         print(numPath)
         print(TPath[numPath])
         Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute(TPath[numPath]) #target_file_path(テストファイル)内のメソッド名をすべて取得
@@ -110,23 +110,43 @@ def storeToDB():
                     }
                     db.test.insert_one(post2)  
         
+                ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
+                print(ProductionmethodLine_list[ProductionMethod])
+                startline = int(ProductionmethodLine_list[ProductionMethod][0])-1
+                print(startline)
+                endline = int(ProductionmethodLine_list[ProductionMethod][1])
+                f = open(PPath[numPath], "r", encoding="utf-8")
+                lines = f.readlines() # 1行毎にファイル終端まで全て読む(改行文字も含まれる)
+                f.close()
+                src = []
+                for x in range(startline,endline):
+                    # print(lines2[x].replace('\n', ''))
+                    srcLow = lines[x].replace('\n', '') + '\n'
+                    print(srcLow)
+                    src.append(srcLow)
+                
+                for low in src:
+                    print(low)
+
+
+        
 if __name__ == '__main__':
     clint = MongoClient()
     db = clint['test']
     PPath = printProductionPath()
-    print(PPath)
-    print(len(PPath))
+    # print(PPath)
+    # print(len(PPath))
 
     TPath = printTestPath()
-    print(TPath)
-    print(len(TPath))
+    # print(TPath)
+    # print(len(TPath))
 
 
     storeToDB()
-
-
-    ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute('C:/Users/ryosuke-ku/Desktop/NiCad-5.1/projects/ant/src/main/org/apache/tools/ant/AntClassLoader.java') #プロダクションファイル内のメソッド名をすべて取得
-    print(ProductionmethodLine_list)
+  
+    # for numPath in range(3):
+    #     ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
+    #     print(ProductionmethodLine_list)
 
     # for Pmethod in Productionmethods_list:
 
