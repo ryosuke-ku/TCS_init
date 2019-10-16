@@ -1,7 +1,4 @@
-    /* package */ synchronized void ensureNonPatternSetsReady() {
-        if (!areNonPatternSetsReady) {
-            includePatterns = fillNonPatternSet(includeNonPatterns, includes);
-            excludePatterns = fillNonPatternSet(excludeNonPatterns, excludes);
-            areNonPatternSetsReady = true;
-        }
+    public BlobSend db(String stringParam) {
+      parms.put(etype.db, stringParam);
+      return this;
     }

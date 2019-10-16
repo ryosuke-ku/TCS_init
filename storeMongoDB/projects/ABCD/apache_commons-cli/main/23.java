@@ -1,0 +1,4 @@
+    void clearValues()
+    {
+        values.clear();
+    }

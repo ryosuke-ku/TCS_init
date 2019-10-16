@@ -32,55 +32,44 @@ def printProductionPath(project_name):
     initTestPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/*Test.java', recursive=True)
     productionPath1 =[]
     for initTestPath in initTestPath1:
-        # print(initTestPath)
         num = initTestPath.rfind("\\")
         testFileName = initTestPath[num+1:]
         fileName = testFileName.replace('Test','').replace('test','')
         prodPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/' + fileName , recursive=True)
         if len(prodPath1)==0:
-            # print('None')
             pass
         else:
-            # print(prodPath1[0])
             productionPath1.append(prodPath1[0])
     return productionPath1
+
 
 def printTestPath(project_name):
     initTestPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/*Test.java', recursive=True)
     testPath1 = []
     for initTestPath in initTestPath1:
-        # print(initTestPath)
         num = initTestPath.rfind("\\")
         testFileName = initTestPath[num+1:]
         fileName = testFileName.replace('Test','').replace('test','')
         prodPath1 = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project_name + '/**/' + fileName , recursive=True)
         if len(prodPath1)==0:
-            # print('None')
             pass
         else:
-            # print(prodPath1[0])
             testPath1.append(initTestPath)
-
     return testPath1
-    # for printtestpath in testPath1:
-    #     print(printtestpath)
 
-def storeToDB():
-    for numPath in range(3):
+
+def storeToDB(project_num, projects_key, project_name):
+    for numPath in range(project_num):
         print(numPath)
         print(TPath[numPath])
         Testmethodcalls_list = AstProcessorTestMethodCall(None, BasicInfoListener()).execute(TPath[numPath]) #target_file_path(テストファイル)内のメソッド名をすべて取得
-        # print(Testmethodcalls_list)
         testMethodMapcall = defaultdict(list)
         num = 0
         for i in Testmethodcalls_list:
-            # print('-------------------------------------------------------')
-            # print('key : ' + i)
             for j in Testmethodcalls_list[i][0]:
                 if len(j) == 0:
                     pass
                 else:
-                    # print('value : ' + j)
                     testMethodMapcall[j + '_' + str(num)] = i
                     num += 1
 
@@ -88,9 +77,7 @@ def storeToDB():
         Productionmethods_list = AstProcessorProduction(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
         print(numPath)
         print(PPath[numPath])
-        # print(Productionmethods_list)
-        # for j in Productionmethods_list:
-        #     print(j)
+
         number = 0
         for ProductionMethod in Productionmethods_list:
             rd = rdict(testMethodMapcall)
@@ -102,7 +89,6 @@ def storeToDB():
                 print('key : ' + str(ProductionMethod))
                 rt = list(set(remethods))
                 print('value : ' + str(rt))
-
     
                 for rtitem in rt:
                     post2 = {
@@ -111,8 +97,7 @@ def storeToDB():
                     }
                     db.test.insert_one(post2)  
         
-                file = open('projects/0123/00joshi_hqapp/main/' + str(number) + '.java','w') # Nicad_3.javaのファイルを開く
-
+                file = open('projects/' + projects_key + '/' + project_name + '/main/' + str(number) + '.java','w') # Nicad_3.javaのファイルを開く
                 ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
                 print(ProductionmethodLine_list[ProductionMethod])
                 startline = int(ProductionmethodLine_list[ProductionMethod][0])-1
@@ -130,8 +115,7 @@ def storeToDB():
                     src.append(srcLow)
 
                   
-                file_test = open('projects/0123/00joshi_hqapp/test/' + str(number) + 'Test.java','w') # Nicad_3.javaのファイルを開く
-
+                file_test = open('projects/' + projects_key + '/' + project_name + '/test/' + str(number) + 'Test.java','w') # Nicad_3.javaのファイルを開く
                 TestmethodLine_list = AstProcessorTestLine(None, BasicInfoListener()).execute(TPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
                 # print(TestmethodLine_list)
                 print(TestmethodLine_list[rtitem])
@@ -169,7 +153,7 @@ def makeFolder():
 
 def dict_projectName():
     projectName = defaultdict(list)
-    projects_array = ['1234','ABCD','EFGH','IJKL','MNOP','QRST','UVW','XYZ']
+    projects_array = ['0123','ABCD','EFGH','IJKL','MNOP','QRST','UVW','XYZ']
     for project in projects_array:
         data_set = glob.glob('D:/ryosuke-ku/data_set/Git_20161108/' + project + '/*')
         for project_data in data_set:
@@ -180,26 +164,87 @@ def dict_projectName():
     
     return projectName
 
+
 if __name__ == '__main__':
     clint = MongoClient()
     db = clint['test']
-    # PPath = printProductionPath()
-    # print(PPath)
-    # print(len(PPath))
 
-    # TPath = printTestPath()
-    # print(TPath)
-    # print(len(TPath))
+    # a = printProductionPath('1234/0xCopy_RelaxFactory')
+    # print(a)
+    # print(len(a))
+
+    # b = printTestPath('1234/0xCopy_RelaxFactory')
+    # print(b)
+    # print(len(b))
+
     projects_dic = dict_projectName()
-    project_list_1234 = projects_dic['1234']
-    print(project_list_1234)
-    for project_name in project_list_1234:
-        print(project_name)
-        a = printProductionPath('1234/' + project_name)
-        print(a)
-        b = printTestPath('1234/' + project_name)
-        print(b)
-    # storeToDB()
+
+    # for projects_key in projects_dic:
+    #     print(projects_key)
+    #     for projects_item in projects_dic[projects_key]:
+    #         print(projects_item)
+
+    for projects_key in projects_dic:
+        print(projects_key)
+        for projects_item in projects_dic[projects_key]:
+            print(projects_item)
+            project_num = len(projects_item)
+            print(project_num)
+
+            num_IndexError = 0
+            num_UnicodeEncodeError = 0
+        
+            PPath = printProductionPath(projects_key + '/' + projects_item)
+            TPath = printTestPath(projects_key + '/' + projects_item)
+            if len(PPath) != 0 and len(TPath) != 0:
+                print(PPath)
+                print(TPath)
+                try:
+                    storeToDB(project_num, projects_key, projects_item)
+                except IndexError as e:
+                    print('catch IndexError:', e)
+                    num_IndexError += 1
+                except UnicodeEncodeError as e:
+                    print('catch UnicodeEncodeError:', e)
+                    num_UnicodeEncodeError += 1
+                except UnicodeDecodeError as e:
+                    print('catch UnicodeDecodeError:', e)
+                except RecursionError as e:
+                    print('catch RecursionError:', e)
+
+
+
+    print('Number of IndexError :' + str(num_IndexError))
+    print('Number of UnicodeEncodeError :' + str(num_UnicodeEncodeError))
+
+
+    # project_list_1234 = projects_dic['1234']
+    # project_num = len(project_list_1234)
+    # print(project_num)
+    # num_IndexError = 0
+    # num_UnicodeEncodeError = 0
+    # for project_name in project_list_1234:
+    #     # print(project_name)
+    #     PPath = printProductionPath('1234/' + project_name)
+    #     TPath = printTestPath('1234/' + project_name)
+    #     if len(PPath) != 0 and len(TPath) != 0:
+    #         print(project_list_1234)
+    #         print(PPath)
+    #         print(TPath)
+    #         try:
+    #             storeToDB(project_num , project_name)
+    #         except IndexError as e:
+    #             print('catch IndexError:', e)
+    #             num_IndexError += 1
+    #         except UnicodeEncodeError as e:
+    #             print('catch UnicodeEncodeError:', e)
+    #             num_UnicodeEncodeError += 1
+
+    # print('Number of IndexError :' + str(num_IndexError))
+    # print('Number of UnicodeEncodeError :' + str(num_UnicodeEncodeError))
+
+    
+   
 
     # for numPath in range(3):
     #     ProductionmethodLine_list = AstProcessorProductionLine(None, BasicInfoListener()).execute(PPath[numPath]) #プロダクションファイル内のメソッド名をすべて取得
