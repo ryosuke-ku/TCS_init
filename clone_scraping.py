@@ -1,6 +1,7 @@
 from urllib import request
 from bs4 import BeautifulSoup
 import re
+from pymongo import MongoClient
 #url
 url = "file:///C:/Users/ryosuke-ku/Desktop/TCS/NICAD/projects/utility_functions-blind-clones/utility_functions-blind-clones-0.30-classes-withsource.html"
 
@@ -11,6 +12,9 @@ html = request.urlopen(url)
 soup = BeautifulSoup(html, "html.parser")
 # print(soup.find("pre").text)
 
+clint = MongoClient()
+db = clint['newDataBase']
+
 codeArray = []
 codePathArray = []
 startLine = []
@@ -20,16 +24,16 @@ tableCode = soup.find('table')
 for item in tableCode.find_all('td'):
     if item.name == 'td':
         srccode = item.find('pre')
-        print(srccode.text)
+        # print(srccode.text)
         codeArray.append(srccode.text)
         item.find('pre').decompose()
-        print(item.text)
+        # print(item.text)
         codePathArray.append(item.text)
 
 
-print(codeArray)
-print('\n')
-print(codePathArray)
+# print(codeArray)
+# print('\n')
+# print(codePathArray)
 for codePath in codePathArray:
     # print(codePath)
     codePath_cutFront = re.sub(r"Lines ", "", codePath)
@@ -44,3 +48,7 @@ for codePath in codePathArray:
     print(startLine)
     endLine = codePath_rmSpace[num_hyphen+1:]
     print(endLine)
+
+    items = db.testList.find({'startline1':startLine,'endline1':endLine})
+    for item in items:
+        print(item)
