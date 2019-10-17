@@ -5,25 +5,30 @@ class TestMongo(object):
 
      def __init__(self):
          self.clint = MongoClient()
-         self.db = self.clint['test']
+         self.db = self.clint['newDataBase']
 
      def add_one(self):
         """データ挿入"""
         post = {
             'title': 'a',
             'content': 'b',
+            'startline1': '6',
+            'endline1': '19',
+            'startline2': '43',
+            'endline2': '645'
             # 'created_at': datetime.now()
         }
-        return self.db.test.insert_one(post)
+        return self.db.testList.insert_one(post)
 
      def add_src(self):
         """データ挿入"""
         post = {
-            'title': 'ハリネズミ',
-            'content': 'public static String apply(int num) { if (num % 15 == 0) { return "FizzBuzz"; } else if (num % 3 == 0) { return "Fizz"; } else if (num % 5 == 0) { return "Buzz"; } else { return String.valueOf(num); } }',
+            'title': 'ハリマロン',
+            'content': 'ゴーリキー',
             'created_at': datetime.now()
         }
-        return self.db.test.insert_one(post)
+        return self.db.testList.insert_one(post)
+
 def main():
     obj = TestMongo()
     rest = obj.add_one()
