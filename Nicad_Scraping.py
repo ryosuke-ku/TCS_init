@@ -10,9 +10,10 @@ ProjectName = 'ant'
 
 url = "file:///C:/Users/ryosuke-ku/Desktop/TCS/NICAD/projects/" + ProjectName + "_functions-blind-clones/" + ProjectName + "_functions-blind-clones-0.30.xml"
 
-os.mkdir('NicadOutputFile_' + ProjectName)
+# os.mkdir('NicadOutputFile_' + ProjectName)
 res = req.urlopen(url)
 #詳しくは省略、上のXMLが返ってくるものと思ってください
+print(res)
 
 startlist = [] #コード片の開始行番号を格納
 endlist = [] #コード片の修了行番号を格納
